@@ -20,7 +20,7 @@ type PrintJob struct {
 }
 
 func main() {
-	fmt.Println("Monitoreo de impresiones iniciado...")
+	log.Println("Iniciando monitoreo de impresiones...")
 
 	for {
 		printJobs, err := getPrintJobs()
