@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -10,13 +9,34 @@ import (
 
 // Estructura para almacenar información sobre trabajos de impresión
 type PrintJob struct {
-	JobID         uint32    `wmi:"JobId"`
-	PrinterName   string    `wmi:"PrinterName"`
-	TotalPages    uint32    `wmi:"TotalPages"`
-	DocumentName  string    `wmi:"Document"`
-	JobStatus     string    `wmi:"JobStatus"`
-	Owner         string    `wmi:"Owner"`
-	TimeSubmitted time.Time `wmi:"TimeSubmitted"`
+	Caption        string    `wmi:"Caption"`
+	Description    string    `wmi:"Description"`
+	InstallDate    time.Time `wmi:"InstallDate"`
+	Name           string    `wmi:"Name"`
+	Status         string    `wmi:"Status"`
+	ElapsedTime    time.Time `wmi:"ElapsedTime"`
+	JobStatus      string    `wmi:"JobStatus"`
+	Notify         string    `wmi:"Notify"`
+	Owner          string    `wmi:"Owner"`
+	Priority       uint32    `wmi:"Priority"`
+	StartTime      time.Time `wmi:"StartTime"`
+	TimeSubmitted  time.Time `wmi:"TimeSubmitted"`
+	UntilTime      time.Time `wmi:"UntilTime"`
+	Color          string    `wmi:"Color"`
+	DataType       string    `wmi:"DataType"`
+	Document       string    `wmi:"Document"`
+	DriverName     string    `wmi:"DriverName"`
+	HostPrintQueue string    `wmi:"HostPrintQueue"`
+	JobId          uint32    `wmi:"JobId"`
+	PagesPrinted   uint32    `wmi:"PagesPrinted"`
+	PaperLength    uint32    `wmi:"PaperLength"`
+	PaperSize      string    `wmi:"PaperSize"`
+	PaperWidth     uint32    `wmi:"PaperWidth"`
+	Parameters     string    `wmi:"Parameters"`
+	PrintProcessor string    `wmi:"PrintProcessor"`
+	Size           uint32    `wmi:"Size"`
+	StatusMask     uint32    `wmi:"StatusMask"`
+	TotalPages     uint32    `wmi:"TotalPages"`
 }
 
 func main() {
@@ -28,8 +48,8 @@ func main() {
 			log.Println("Error obteniendo trabajos de impresión:", err)
 		} else {
 			for _, job := range printJobs {
-				fmt.Printf("Usuario: %s | Impresora: %s | Documento: %s | Páginas: %d\n",
-					job.Owner, job.PrinterName, job.DocumentName, job.TotalPages)
+				log.Printf("Usuario: %s | Impresora: %s | Documento: %s | Páginas: %d\n",
+					job.Owner, job.PrintProcessor, job.Document, job.TotalPages)
 			}
 		}
 		time.Sleep(5 * time.Second) // Revisar cada 5 segundos
@@ -39,7 +59,7 @@ func main() {
 // Función que obtiene los trabajos de impresión activos
 func getPrintJobs() ([]PrintJob, error) {
 	var jobs []PrintJob
-	query := "SELECT JobId, PrinterName, TotalPages, Document, JobStatus, Owner, TimeSubmitted FROM Win32_PrintJob"
+	query := "SELECT * FROM Win32_PrintJob"
 
 	err := wmi.Query(query, &jobs)
 	if err != nil {
