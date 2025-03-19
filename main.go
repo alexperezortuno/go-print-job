@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -39,6 +40,11 @@ type PrintJob struct {
 	TotalPages uint32 `wmi:"TotalPages"`
 }
 
+func (p PrintJob) String() string {
+	return fmt.Sprintf("JobId: %d | Usuario: %s | Impresora: %s | Documento: %s | Páginas: %d | Size: %d",
+		p.JobId, p.Owner, p.PrintProcessor, p.Document, p.TotalPages, p.Size)
+}
+
 func main() {
 	log.Println("Iniciando monitoreo de impresiones...")
 
@@ -49,8 +55,7 @@ func main() {
 		} else {
 			for _, job := range printJobs {
 				if job.TotalPages > 0 {
-					log.Printf("JobId: %d | Usuario: %s | Impresora: %s | Documento: %s | Páginas: %d\n",
-						job.JobId, job.Owner, job.PrintProcessor, job.Document, job.TotalPages)
+					log.Printf(job.String())
 				}
 			}
 		}
@@ -61,7 +66,7 @@ func main() {
 // Función que obtiene los trabajos de impresión activos
 func getPrintJobs() ([]PrintJob, error) {
 	var jobs []PrintJob
-	query := "SELECT JobId, Owner, PrintProcessor, Document, TotalPages, PaperSize, PaperWidth, PrintProcessor FROM Win32_PrintJob"
+	query := "SELECT * FROM Win32_PrintJob"
 
 	err := wmi.Query(query, &jobs)
 	if err != nil {
