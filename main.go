@@ -231,9 +231,7 @@ func scheduleTask() {
 				return
 			}
 
-			// Send job to server
-
-			updateJob(PrintJob{
+			j := PrintJob{
 				JobId:          job.JobId,
 				Document:       job.Document,
 				PaperSize:      job.PaperSize,
@@ -241,7 +239,14 @@ func scheduleTask() {
 				PrintProcessor: job.PrintProcessor,
 				Size:           job.Size,
 				TotalPages:     job.TotalPages,
-			})
+			}
+
+			// Send job to server
+			sended := sendJob(j, token)
+
+			if sended {
+				updateJob(j)
+			}
 		}
 	}
 }
