@@ -52,6 +52,30 @@ type PrintJob struct {
 	TotalPages uint32 `wmi:"TotalPages"`
 }
 
+type mapperJobToJson struct {
+	JobId          uint32 `json:"job_id"`
+	Document       string `json:"document"`
+	PaperSize      string `json:"paper_size"`
+	PaperWidth     uint32 `json:"paper_width"`
+	PrintProcessor string `json:"print_processor"`
+	Size           uint32 `json:"size"`
+	TotalPages     uint32 `json:"total_pages"`
+	Owner          string `json:"owner"`
+}
+
+func printJobToJson(job PrintJob) mapperJobToJson {
+	return mapperJobToJson{
+		JobId:          job.JobId,
+		Document:       job.Document,
+		PaperSize:      job.PaperSize,
+		PaperWidth:     job.PaperWidth,
+		PrintProcessor: job.PrintProcessor,
+		Size:           job.Size,
+		TotalPages:     job.TotalPages,
+		Owner:          job.Owner,
+	}
+}
+
 type Jobs struct {
 	JobId          uint32 `gorm:"column:job_id;primaryKey"`
 	Document       string `gorm:"column:document"`
@@ -177,7 +201,8 @@ func getCredentials() (string, string) {
 }
 
 func sendJob(job PrintJob, token string) bool {
-	data, err := json.Marshal(job)
+	jobJson := printJobToJson(job)
+	data, err := json.Marshal(jobJson)
 	if err != nil {
 		log.Println("error marshalling job:", err)
 		return false
